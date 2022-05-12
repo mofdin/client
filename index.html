@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Client HTML</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.min.js"></script>
+  </head>
+  <body>
+    <canvas
+      class="game-canvas"
+      width="500"
+      height="500"
+      style="outline: 1px solid #333"
+    >
+    </canvas>
+
+    <script>
+      const canvas = document.querySelector(".game-canvas");
+      const ctx = canvas.getContext("2d");
+
+      ctx.font = "30px Arial";
+
+      const socket = io("http://localhost:3333");
+
+      socket.on("playersMove", (players) => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        players.forEach((player) => {
+          ctx.fillText(player.name, player.x, player.y);
+        });
+      });
+
+      document.onkeydown = (e) => {
+        const key = e.code;
+
+        if (key === "ArrowUp" || key === "KeyW") {
+          socket.emit("playerMove", { direction: "UP", isPressing: true });
+        } else if (key === "ArrowDown" || key === "KeyS") {
+          socket.emit("playerMove", { direction: "DOWN", isPressing: true });
+        } else if (key === "ArrowLeft" || key === "KeyA") {
+          socket.emit("playerMove", { direction: "LEFT", isPressing: true });
+        } else if (key === "ArrowRight" || key === "KeyD") {
+          socket.emit("playerMove", { direction: "RIGHT", isPressing: true });
+        }
+      };
+      document.onkeyup = (e) => {
+        const key = e.code;
+
+        if (key === "ArrowUp" || key === "KeyW") {
+          socket.emit("playerMove", { direction: "UP", isPressing: false });
+        } else if (key === "ArrowDown" || key === "KeyS") {
+          socket.emit("playerMove", { direction: "DOWN", isPressing: false });
+        } else if (key === "ArrowLeft" || key === "KeyA") {
+          socket.emit("playerMove", { direction: "LEFT", isPressing: false });
+        } else if (key === "ArrowRight" || key === "KeyD") {
+          socket.emit("playerMove", { direction: "RIGHT", isPressing: false });
+        }
+      };
+    </script>
+  </body>
+</html>
